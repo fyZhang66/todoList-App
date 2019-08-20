@@ -4,7 +4,8 @@ import './reset.css'
 import './App.css'
 import TodoInput from './TodoInput'
 import TodoItem from './TodoItem'
-import * as localStore from './localStore'
+import UserDialog from './UserDialog'
+
 
 
 
@@ -13,11 +14,11 @@ class App extends Component {
     super(props)
     this.state = {
       newTodo: '',
-      todoList: localStore.load('todoList') || []
+      todoList:[]
     }
   }
   componentDidUpdate(){
-    localStore.save('todoList',this.state.todoList)
+    
   }
   addTodo(event) {
     this.state.todoList.push({
@@ -74,6 +75,7 @@ class App extends Component {
           <ol className="todolist">
             {todos}
           </ol>
+          <UserDialog/>
         </div>
 
       </div>
