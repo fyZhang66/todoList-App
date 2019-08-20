@@ -1,17 +1,17 @@
 {
   "files": {
-    "main.css": "/todoList-App/build/static/css/main.abcac9b9.chunk.css",
-    "main.js": "/todoList-App/build/static/js/main.d6a8187c.chunk.js",
-    "main.js.map": "/todoList-App/build/static/js/main.d6a8187c.chunk.js.map",
+    "main.css": "/todoList-App/build/static/css/main.9f7f1788.chunk.css",
+    "main.js": "/todoList-App/build/static/js/main.ef55af84.chunk.js",
+    "main.js.map": "/todoList-App/build/static/js/main.ef55af84.chunk.js.map",
     "runtime~main.js": "/todoList-App/build/static/js/runtime~main.5ed92f4f.js",
     "runtime~main.js.map": "/todoList-App/build/static/js/runtime~main.5ed92f4f.js.map",
     "static/css/2.764ccc25.chunk.css": "/todoList-App/build/static/css/2.764ccc25.chunk.css",
     "static/js/2.59fe39ef.chunk.js": "/todoList-App/build/static/js/2.59fe39ef.chunk.js",
     "static/js/2.59fe39ef.chunk.js.map": "/todoList-App/build/static/js/2.59fe39ef.chunk.js.map",
     "index.html": "/todoList-App/build/index.html",
-    "precache-manifest.bef5e8bc8e729ba405b347c4820551e2.js": "/todoList-App/build/precache-manifest.bef5e8bc8e729ba405b347c4820551e2.js",
+    "precache-manifest.ddd6ba258e1dfbeb4fd0b378e104319c.js": "/todoList-App/build/precache-manifest.ddd6ba258e1dfbeb4fd0b378e104319c.js",
     "service-worker.js": "/todoList-App/build/service-worker.js",
     "static/css/2.764ccc25.chunk.css.map": "/todoList-App/build/static/css/2.764ccc25.chunk.css.map",
-    "static/css/main.abcac9b9.chunk.css.map": "/todoList-App/build/static/css/main.abcac9b9.chunk.css.map"
+    "static/css/main.9f7f1788.chunk.css.map": "/todoList-App/build/static/css/main.9f7f1788.chunk.css.map"
   }
 }
