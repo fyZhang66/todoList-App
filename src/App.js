@@ -5,6 +5,7 @@ import './App.css'
 import TodoInput from './TodoInput'
 import TodoItem from './TodoItem'
 import UserDialog from './UserDialog'
+import { getCurrentUser, signOut } from './leanCloud'
 
 
 
@@ -13,12 +14,13 @@ class App extends Component {
   constructor(props) {
     super(props)
     this.state = {
+      user: getCurrentUser() || {},
       newTodo: '',
-      todoList:[]
+      todoList: []
     }
   }
-  componentDidUpdate(){
-    
+  componentDidUpdate() {
+
   }
   addTodo(event) {
     this.state.todoList.push({
@@ -31,51 +33,74 @@ class App extends Component {
       newTodo: '',
       todoList: this.state.todoList
     })
-   
+
   }
   changeTitle(event) {
     this.setState({
       newTodo: event.target.value,
       todoList: this.state.todoList
     })
-    
+
   }
-  toggle(e,todo){
+  toggle(e, todo) {
     todo.status = todo.status === 'completed' ? '' : 'completed'
     this.setState(this.state)
-    
+
   }
-  delete(e,todo){
+  delete(e, todo) {
     todo.deleted = true
     this.setState(this.state)
-   
+
+  }
+  onSignUp(user) {
+    let stateCopy = JSON.parse(JSON.stringify(this.state))
+    stateCopy.user = user
+    console.log(22)
+    this.setState(stateCopy)
+  }
+  signOut() {
+    signOut()
+    let stateCopy = JSON.parse(JSON.stringify(this.state))
+    stateCopy.user = {}
+    this.setState(stateCopy)
+  }
+  onSignIn(user){
+    let stateCopy = JSON.parse(JSON.stringify(this.state))
+    stateCopy.user = user
+    this.setState(stateCopy)
   }
   render() {
     let todos = this.state.todoList
-    .filter((item=>!item.deleted))
-    .map((item, index) => {
-      return (
-        <li key={item.id}>
-          <TodoItem todo={item}    
-            onToggle = {this.toggle.bind(this)}
-            onDelete = {this.delete.bind(this)}/>
-        </li>
-      )
-    })
+      .filter((item => !item.deleted))
+      .map((item, index) => {
+        return (
+          <li key={item.id}>
+            <TodoItem todo={item}
+              onToggle={this.toggle.bind(this)}
+              onDelete={this.delete.bind(this)} />
+          </li>
+        )
+      })
     return (
       <div className="App">
-        <h1>我的待办</h1>
+        <h1>{this.state.user.username || '我'}的待办
+          {this.state.user.id ? <button onClick={this.signOut.bind(this)}>登出</button> : null}
+        </h1>
         <div className="inputWrapper">
           <h3>New Task</h3>
           <TodoInput content={this.state.newTodo}
-            onSubmit={this.addTodo.bind(this)} 
-            onChange = {this.changeTitle.bind(this)}/>
+            onSubmit={this.addTodo.bind(this)}
+            onChange={this.changeTitle.bind(this)} />
         </div>
         <div className="itemWrapper">
           <ol className="todolist">
             {todos}
           </ol>
-          <UserDialog/>
+          {this.state.user.id ?
+            null :
+            <UserDialog
+              onSignUp = {this.onSignUp.bind(this)} 
+              onSignIn = {this.onSignIn.bind(this)}/>}
         </div>
 
       </div>
