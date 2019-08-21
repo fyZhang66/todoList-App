@@ -1,107 +1,101 @@
 import React, { Component } from 'react'
 import './UserDialog.css'
-import {signUp,signIn} from './leanCloud'
+import { signUp, signIn, sendPasswordResetEmail } from './leanCloud'
+
+import SignInOrSignUp from './SignInOrSignUp'
+import ForgotPasswordForm from './ForgotPasswordForm'
+
 
 export default class UserDialog extends Component {
     constructor() {
         super()
         this.state = {
-            selected: 'signUp',
+            selectedTab: 'signInOrSignUp',
             formData: {
+                email: '',
                 username: '',
-                password: ''
+                password: '',
             }
         }
     }
-    switch(e) {
-        this.setState({
-            selected: e.target.value
-        })
-    }
     signUp(e) {
         e.preventDefault()
-        let {username,password} = this.state.formData
-        let success = (user)=>{
-            console.log('user',user)
-            this.props.onSignUp.call(null,user)
+        let { username, password, email } = this.state.formData
+        let success = (user) => {
+            console.log('user', user)
+            this.props.onSignUp.call(null, user)
             alert('注册成功')
         }
-        let error = (error)=>{
-            alert(error)
+        let error = (error) => {
+
+            switch (error.code) {
+                case 202:
+                    alert('用户名已被占用')
+                    break;
+                default:
+                    alert(error)
+                    break;
+            }
         }
-        signUp(username,password,success,error)
-     }
+        signUp(email, username, password, success, error)
+    }
     signIn(e) {
         e.preventDefault()
-        let {username,password} = this.state.formData
-        let success = (user)=>{
-            this.props.onSignIn.call(null,user)
+        let { username, password } = this.state.formData
+        let success = (user) => {
+            this.props.onSignIn.call(null, user)
             alert('登陆成功')
         }
-        let error = (error)=>{
-            alert(error)
+        let error = (error) => {
+
+            switch (error.code) {
+                case 210:
+                    alert('用户名与密码不匹配')
+                    break;
+                default:
+                    alert(error)
+            }
+
         }
-        signIn(username,password,success,error)
-     }
-    changeFormData(key,e){
+        signIn(username, password, success, error)
+    }
+    changeFormData(key, e) {
         let stateCopy = JSON.parse(JSON.stringify(this.state))
         stateCopy.formData[key] = e.target.value
         this.setState(stateCopy)
     }
+    showForgotPassword() {
+        let stateCopy = JSON.parse(JSON.stringify(this.state))
+        stateCopy.selectedTab = 'forgotPassword'
+        this.setState(stateCopy)
+    }
+    resetPassword(e) {
+        e.preventDefault()
+        sendPasswordResetEmail(this.state.formData.email)
+    }
+    returnToSignIn() {
+        let stateCopy = JSON.parse(JSON.stringify(this.state))
+        stateCopy.selectedTab = 'signInOrSignUp'
+        this.setState(stateCopy)
+    }
     render() {
-        let signUpFrom = (
-            <form className="signUp" onSubmit={this.signUp.bind(this)}>
-                <div className="row">
-                    <label>用户名</label>
-                    <input type="text" value={this.state.formData.username}
-                        onChange={this.changeFormData.bind(this,'username')} />
-                </div>
-                <div className="row">
-                    <label>密码</label>
-                    <input type="password" value = {this.state.formData.password}
-                    onChange = {this.changeFormData.bind(this,'password')}/>
-                </div>
-                <div className="row actions">
-                    <button type="submit">注册</button>
-                </div>
-            </form>
-        )
-        let signInFrom = (
-            <form className="signIn" onSubmit={this.signIn.bind(this)}>
-                <div className="row">
-                    <label>用户名</label>
-                    <input type="text" value={this.state.formData.username}
-                    onChange={this.changeFormData.bind(this,'username')}/>
-                </div>
-                <div className="row">
-                    <label>密码</label>
-                    <input type="password" value={this.state.formData.password}
-                    onChange={this.changeFormData.bind(this,'password')}/>
-                </div>
-                <div className="row actions">
-                    <button type="submit">登陆</button>
-                </div>
-            </form>
-        )
         return (
             <div className="UserDialog-Wrapper">
                 <div className="UserDialog">
-                    <nav>
-                        <label>
-                            <input type="radio" value='signUp' 
-                                checked={this.state.selected === 'signUp'} 
-                                onChange = {this.switch.bind(this)}
-                        />注册</label>
-                        <label>
-                            <input type="radio" value='signIn' 
-                                checked={this.state.selected === 'signIn'} 
-                                onChange={this.switch.bind(this)}
-                        />登陆</label>
-                    </nav>
-                    <div className="panes">
-                        {this.state.selected === 'signUp' ? signUpFrom : null}
-                        {this.state.selected === 'signIn' ? signInFrom : null}
-                    </div>
+                    {this.state.selectedTab === 'signInOrSignUp' ?
+                        <SignInOrSignUp
+                            formData={this.state.formData}
+                            onSignIn={this.signIn.bind(this)}
+                            onSignUp={this.signUp.bind(this)}
+                            onChange={this.changeFormData.bind(this)}
+                            onForgotPassword={this.showForgotPassword.bind(this)}
+                        /> :
+                        <ForgotPasswordForm
+                            formData={this.state.formData}
+                            onSubmit={this.resetPassword.bind(this)}
+                            onChange={this.changeFormData.bind(this)}
+                            onSignIn={this.returnToSignIn.bind(this)}
+                        />}
                 </div>
             </div>
         )

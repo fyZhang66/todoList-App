@@ -52,23 +52,20 @@ class App extends Component {
     this.setState(this.state)
 
   }
-  onSignUp(user) {
+  
+  onSignUpOrSingnIn(user){
     let stateCopy = JSON.parse(JSON.stringify(this.state))
     stateCopy.user = user
-    console.log(22)
     this.setState(stateCopy)
   }
   signOut() {
     signOut()
+    console.log('out')
     let stateCopy = JSON.parse(JSON.stringify(this.state))
     stateCopy.user = {}
     this.setState(stateCopy)
   }
-  onSignIn(user){
-    let stateCopy = JSON.parse(JSON.stringify(this.state))
-    stateCopy.user = user
-    this.setState(stateCopy)
-  }
+ 
   render() {
     let todos = this.state.todoList
       .filter((item => !item.deleted))
@@ -99,8 +96,8 @@ class App extends Component {
           {this.state.user.id ?
             null :
             <UserDialog
-              onSignUp = {this.onSignUp.bind(this)} 
-              onSignIn = {this.onSignIn.bind(this)}/>}
+              onSignUp = {this.onSignUpOrSingnIn.bind(this)} 
+              onSignIn = {this.onSignUpOrSingnIn.bind(this)}/>}
         </div>
 
       </div>
