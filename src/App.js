@@ -5,7 +5,8 @@ import './App.css'
 import TodoInput from './TodoInput'
 import TodoItem from './TodoItem'
 import UserDialog from './UserDialog'
-import { getCurrentUser, signOut } from './leanCloud'
+import { getCurrentUser, signOut, TodoModel } from './leanCloud'
+
 
 
 
@@ -18,23 +19,38 @@ class App extends Component {
       newTodo: '',
       todoList: []
     }
+    let user = getCurrentUser()
+    if (user) {
+      TodoModel.getByUser(user,(todos)=>{
+        console.log(todos)
+        let stateCopy = JSON.parse(JSON.stringify(this.state))
+        stateCopy.todoList = todos
+        this.setState(stateCopy)
+      })
+    }
   }
+
   componentDidUpdate() {
 
   }
-  addTodo(event) {
-    this.state.todoList.push({
-      id: idMaker(),
+  addTodo(event){
+    let newTodo = {
       title: event.target.value,
-      status: null,
+      status: {complated:false},
       deleted: false
+    }
+    TodoModel.create(newTodo, (id) => {
+      newTodo.id = id
+      this.state.todoList.push(newTodo)
+      this.setState({
+        newTodo: '',
+        todoList: this.state.todoList
+      })
+    }, (error) => {
+      console.log(error)
     })
-    this.setState({
-      newTodo: '',
-      todoList: this.state.todoList
-    })
-
   }
+
   changeTitle(event) {
     this.setState({
       newTodo: event.target.value,
@@ -42,18 +58,26 @@ class App extends Component {
     })
 
   }
-  toggle(e, todo) {
-    todo.status = todo.status === 'completed' ? '' : 'completed'
-    this.setState(this.state)
-
+  toggle(e, todo){
+    let oldStatus = todo.status
+    console.log(todo)
+    todo.status.complated = todo.status.complated ===true  ? false : true
+    TodoModel.update(todo, () => {
+      this.setState(this.state)
+    }, (error) => {
+      console.log(error)
+      todo.status = oldStatus
+      this.setState(this.state)
+    })
   }
   delete(e, todo) {
-    todo.deleted = true
-    this.setState(this.state)
-
+    TodoModel.destory(todo.id,()=>{
+      todo.deleted = true
+      this.setState(this.state)
+    })
   }
-  
-  onSignUpOrSingnIn(user){
+
+  onSignUpOrSingnIn(user) {
     let stateCopy = JSON.parse(JSON.stringify(this.state))
     stateCopy.user = user
     this.setState(stateCopy)
@@ -63,9 +87,11 @@ class App extends Component {
     console.log('out')
     let stateCopy = JSON.parse(JSON.stringify(this.state))
     stateCopy.user = {}
+    stateCopy.todoList = []
+    console.log(33)
     this.setState(stateCopy)
   }
- 
+
   render() {
     let todos = this.state.todoList
       .filter((item => !item.deleted))
@@ -96,8 +122,8 @@ class App extends Component {
           {this.state.user.id ?
             null :
             <UserDialog
-              onSignUp = {this.onSignUpOrSingnIn.bind(this)} 
-              onSignIn = {this.onSignUpOrSingnIn.bind(this)}/>}
+              onSignUp={this.onSignUpOrSingnIn.bind(this)}
+              onSignIn={this.onSignUpOrSingnIn.bind(this)} />}
         </div>
 
       </div>
@@ -105,10 +131,6 @@ class App extends Component {
   }
 }
 
-let id = 0
-function idMaker() {
-  id += 1
-  return id
-}
+
 
 export default App;

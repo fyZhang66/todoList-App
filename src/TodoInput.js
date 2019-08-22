@@ -2,7 +2,7 @@ import React from 'react'
 
 function submit(props,e){
     if(e.key === 'Enter'){
-        if(e.target.value.trim() != ''){
+        if(e.target.value.trim() !== ''){
             props.onSubmit(e)
         }    
     }
